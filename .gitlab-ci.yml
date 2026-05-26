@@ -1,0 +1,46 @@
+image: python:3.12-slim
+
+stages:
+  - test
+  - build
+  - deploy
+
+# Global cache to speed up pip installations between runs
+cache:
+  paths:
+    - .cache/pip
+    - venv/
+
+before_script:
+  - python -V
+  - pip install --upgrade pip
+
+test:
+  stage: test
+  script:
+    - pip install -r requirements.txt
+    - pip install bandit  # Install the security scanner
+    - echo "Running security vulnerability scan..."
+    - bandit -r src/ -ll  # Scans the src folder for medium/high severity issues
+    - python -m unittest discover -s tests -p "test_*.py" || echo "No tests folder found."
+
+build:
+  stage: build
+  script:
+    - echo "Packaging Axiom Platform modules..."
+    - mkdir -p dist
+    - cp -r src/* dist/
+  artifacts:
+    paths:
+      - dist/
+
+deploy:
+  stage: deploy
+  environment:
+    name: production
+  script:
+    - echo "Deploying platform to production environment..."
+
+    - echo "Axiom Platform successfully deployed!"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"

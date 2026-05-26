@@ -1,0 +1,20 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'axiom-app-1'
+    static_configs:
+      - targets: ['axiom-app-1:8080']
+
+  - job_name: 'axiom-app-2'
+    static_configs:
+      - targets: ['axiom-app-2:8080']
+
+  - job_name: 'axiom-app-3'
+    static_configs:
+      - targets: ['axiom-app-3:8080']
+
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']

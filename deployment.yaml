@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: axiom-dataops-deployment
+  labels:
+    app: axiom-dataops
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: axiom-dataops
+  template:
+    metadata:
+      labels:
+        app: axiom-dataops
+    spec:
+      containers:
+      - name: axiom-dataops-container
+        image: axiom-dataops:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DATABASE_SERVER
+          value: "host.docker.internal\\SQLEXPRESS"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: axiom-dataops-service
+  labels:
+    app: axiom-dataops
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    app: axiom-dataops
